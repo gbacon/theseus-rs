@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>Theseus</title>
+
+    <link data-trunk rel="rust" data-wasm-opt="2">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        #the_canvas {
+            width: 100%;
+            height: 100%;
+            visibility: hidden;
+        }
+
+        #loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background: #111;
+            color: white;
+            font-family: sans-serif;
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 4px solid #555;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <div>Loading Theseus…</div>
+    </div>
+
+    <canvas id="the_canvas"></canvas>
+
+    <script>
+        window.addEventListener("TrunkApplicationStarted", async () => {
+            const canvas = document.getElementById("the_canvas");
+            const loading = document.getElementById("loading");
+
+            try {
+                await window.wasmBindings.start(canvas);
+
+                canvas.style.visibility = "visible";
+                loading.style.display = "none";
+            } catch (error) {
+                console.error("Failed to start Theseus:", error);
+
+                loading.innerHTML = `
+                    <div>Theseus failed to start.</div>
+                    <pre style="white-space: pre-wrap;">${String(error)}</pre>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
